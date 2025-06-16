@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mushroom Farm Automation</title>
+    <title>Mushroom Farm Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,11 +43,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
-        .card-title {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
         .sensor-value {
             font-size: 2.5rem;
             font-weight: bold;
@@ -78,20 +73,6 @@
             height: 300px;
             margin-top: 20px;
         }
-        .threshold {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        .logic-status {
-            margin: 15px 0;
-        }
-        .condition {
-            margin: 8px 0;
-            padding: 8px;
-            border-radius: 4px;
-            background: #f8f9fa;
-        }
         .alert {
             padding: 10px;
             margin: 5px 0;
@@ -104,15 +85,12 @@
         .alert-danger {
             background: var(--danger);
         }
-        .alert-info {
-            background: var(--primary);
-        }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>Mushroom Farm Automation</h1>
+            <h1>Mushroom Farm Dashboard</h1>
             <p id="last-updated">Last updated: --</p>
         </div>
 
@@ -124,19 +102,16 @@
                     <h3>Temperature</h3>
                     <div class="sensor-value" id="temperature">--</div>
                     <div class="sensor-unit">°C</div>
-                    <div class="threshold">Range: 25°C - 28°C</div>
                 </div>
                 <div class="sensor-reading">
                     <h3>Humidity</h3>
                     <div class="sensor-value" id="humidity">--</div>
                     <div class="sensor-unit">%</div>
-                    <div class="threshold">Range: 85% - 95%</div>
                 </div>
                 <div class="sensor-reading">
                     <h3>CO₂ Level</h3>
                     <div class="sensor-value" id="co2">--</div>
                     <div class="sensor-unit">ppm</div>
-                    <div class="threshold">Range: 800ppm - 1000ppm</div>
                 </div>
             </div>
 
@@ -147,13 +122,11 @@
                     <h3>Light Intensity</h3>
                     <div class="sensor-value" id="lux">--</div>
                     <div class="sensor-unit">lux</div>
-                    <div class="threshold">Minimum: 200 lux</div>
                 </div>
                 <div class="sensor-reading">
                     <h3>Water Level</h3>
                     <div class="sensor-value" id="waterLevel">--</div>
                     <div class="sensor-unit">cm</div>
-                    <div class="threshold">Minimum: 10 cm</div>
                 </div>
             </div>
 
@@ -180,37 +153,25 @@
         </div>
 
         <div class="card">
-            <h2 class="card-title">Control Logic Status</h2>
-            <div class="logic-status">
-                <h3>Current Conditions:</h3>
-                <div id="light-condition" class="condition">Light: --</div>
-                <div id="humidity-condition" class="condition">Humidity: --</div>
-                <div id="co2-condition" class="condition">CO₂: --</div>
-                <div id="water-condition" class="condition">Water: --</div>
-            </div>
-            <div class="alerts" id="system-alerts">
-                <!-- Alerts will appear here -->
-            </div>
-        </div>
-
-        <div class="card">
             <h2 class="card-title">Environmental Trends</h2>
             <div class="chart-container">
                 <canvas id="environmentChart"></canvas>
             </div>
         </div>
+
+        <div id="system-alerts"></div>
     </div>
 
     <script>
-        // Firebase configuration
+        // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
         const firebaseConfig = {
-            apiKey: "",
+            apiKey: "YOUR_API_KEY",
             authDomain: "mushroomfarm-3c701.firebaseapp.com",
             databaseURL: "https://mushroomfarm-3c701-default-rtdb.firebaseio.com",
             projectId: "mushroomfarm-3c701",
             storageBucket: "mushroomfarm-3c701.appspot.com",
-            messagingSenderId: "",
-            appId: ""
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -229,95 +190,78 @@
                         data: [],
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1,
-                        yAxisID: 'y'
+                        tension: 0.1
                     },
                     {
                         label: 'Humidity (%)',
                         data: [],
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1,
-                        yAxisID: 'y'
+                        tension: 0.1
                     },
                     {
                         label: 'CO₂ (ppm)',
                         data: [],
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1,
-                        yAxisID: 'y1'
+                        tension: 0.1
                     }
                 ]
             },
             options: {
                 responsive: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
                 scales: {
                     y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: {
-                            drawOnChartArea: false,
-                        },
-                    },
+                        beginAtZero: false
+                    }
                 }
             }
         });
 
-        // Listen for sensor data changes
-        database.ref('sensorData').on('value', (snapshot) => {
+        // Listen for data changes
+        database.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
-            updateSensorDisplay(data);
-            updateChart(data);
-            document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
-        });
-
-        // Listen for device status changes
-        database.ref('deviceStatus').on('value', (snapshot) => {
-            const status = snapshot.val();
-            updateDeviceStatus(status);
-        });
-
-        // Listen for notifications
-        database.ref('notifications').on('value', (snapshot) => {
-            const notification = snapshot.val();
-            if (notification && notification.lastAlert) {
-                showAlert(notification.lastAlert);
-            }
-        });
-
-        function updateSensorDisplay(data) {
-            if (data) {
-                document.getElementById('temperature').textContent = data.temperature ? data.temperature.toFixed(1) : '--';
-                document.getElementById('humidity').textContent = data.humidity ? data.humidity.toFixed(1) : '--';
-                document.getElementById('co2').textContent = data.co2 || '--';
-                document.getElementById('lux').textContent = data.lux ? data.lux.toFixed(0) : '--';
-                document.getElementById('waterLevel').textContent = data.waterLevel ? data.waterLevel.toFixed(1) : '--';
+            console.log("Data received:", data); // Debug log
+            
+            if (data && data.sensorData) {
+                // Update sensor displays
+                document.getElementById('temperature').textContent = 
+                    data.sensorData.temperature ? data.sensorData.temperature.toFixed(1) : '--';
+                document.getElementById('humidity').textContent = 
+                    data.sensorData.humidity ? data.sensorData.humidity.toFixed(1) : '--';
+                document.getElementById('co2').textContent = 
+                    data.sensorData.co2 || '--';
+                document.getElementById('lux').textContent = 
+                    data.sensorData.lux ? data.sensorData.lux.toFixed(0) : '--';
+                document.getElementById('waterLevel').textContent = 
+                    data.sensorData.waterLevel ? data.sensorData.waterLevel.toFixed(1) : '--';
                 
-                updateLogicStatus(data);
+                // Update chart
+                updateChart(data.sensorData);
             }
-        }
 
-        function updateDeviceStatus(status) {
-            if (status) {
-                updateStatus('humidifier', status.humidifier);
-                updateStatus('blower', status.blower);
-                updateStatus('light', status.light);
-                updateStatus('exhaust', status.exhaust);
+            if (data && data.deviceStatus) {
+                // Update device status
+                updateDeviceStatus('humidifier', data.deviceStatus.humidifier);
+                updateDeviceStatus('blower', data.deviceStatus.blower);
+                updateDeviceStatus('light', data.deviceStatus.light);
+                updateDeviceStatus('exhaust', data.deviceStatus.exhaust);
             }
-        }
 
-        function updateStatus(device, isOn) {
+            if (data && data.system) {
+                document.getElementById('last-updated').textContent = 
+                    `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
+
+            if (data && data.notifications) {
+                showAlert(data.notifications.lastAlert);
+            }
+        }, (error) => {
+            console.error("Firebase read failed:", error);
+            showAlert("Error connecting to database");
+        });
+
+        function updateDeviceStatus(device, isOn) {
             const indicator = document.getElementById(`${device}-status`);
             const text = document.getElementById(`${device}-text`);
             
@@ -330,31 +274,6 @@
                 text.textContent = 'OFF';
                 text.style.color = 'var(--danger)';
             }
-        }
-
-        function updateLogicStatus(data) {
-            // Light condition
-            const lightStatus = data.lux < 200 ? 'ON (Low Light)' : 
-                               (data.temperature > 28 || data.humidity < 85) ? 'ON (High Temp/Low Hum)' : 'OFF';
-            document.getElementById('light-condition').textContent = `Light: ${lightStatus}`;
-            
-            // Humidity condition
-            let humidityStatus;
-            if (data.humidity < 85) humidityStatus = 'LOW (Humidifier ON)';
-            else if (data.humidity > 95) humidityStatus = 'HIGH (Humidifier OFF)';
-            else humidityStatus = 'NORMAL';
-            document.getElementById('humidity-condition').textContent = `Humidity: ${humidityStatus}`;
-            
-            // CO2 condition
-            let co2Status;
-            if (data.co2 > 1000) co2Status = 'HIGH (Blower ON)';
-            else if (data.co2 < 800) co2Status = 'LOW (Blower OFF)';
-            else co2Status = 'NORMAL';
-            document.getElementById('co2-condition').textContent = `CO₂: ${co2Status}`;
-            
-            // Water condition
-            const waterStatus = data.waterLevel < 10 ? 'LOW (Refill needed)' : 'Adequate';
-            document.getElementById('water-condition').textContent = `Water: ${waterStatus}`;
         }
 
         function updateChart(data) {
@@ -379,21 +298,21 @@
         }
 
         function showAlert(message) {
+            if (!message) return;
+            
             const alertsDiv = document.getElementById('system-alerts');
-            const alertClass = message.includes('Warning') ? 'alert-danger' : 
-                             message.includes('Alert') ? 'alert-warning' : 'alert-info';
+            const alertClass = message.includes('Warning') ? 'alert-danger' : 'alert-warning';
             
             alertsDiv.innerHTML = `
                 <div class="alert ${alertClass}">
                     ⚠️ ${message}
                 </div>
-                ${alertsDiv.innerHTML}
             `;
             
-            // Keep only the last 3 alerts
-            while (alertsDiv.children.length > 3) {
-                alertsDiv.removeChild(alertsDiv.lastChild);
-            }
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                alertsDiv.innerHTML = '';
+            }, 5000);
         }
     </script>
 </body>
