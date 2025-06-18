@@ -2,123 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mushroom Farm Dashboard</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    /* [Same CSS styles as your previous dashboard] */
-    /* Styles omitted here for brevity */
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="dashboard">
-    <div class="header">
-      <h1>Mushroom Farm Dashboard</h1>
-      <div>
-        <span class="connection-status" id="connection-status">
-          <span class="connection-dot disconnected"></span>
-          <span>Disconnected</span>
-        </span>
-        <button class="refresh-btn" id="refresh-btn">
-          <span class="material-icons">refresh</span> Refresh
-        </button>
-      </div>
-    </div>
-    <p id="last-updated">Last updated: --</p>
-    <div id="system-alerts"></div>
+  <header>
+    <h1>Smart Mushroom Farm Dashboard</h1>
+  </header>
 
-    <div class="grid">
-      <div class="card">
-        <h2 class="card-title">
-          <span>Environmental Conditions</span>
-          <button class="history-btn" data-chart="environment">
-            <span class="material-icons">history</span>
-          </button>
-        </h2>
-        <div class="sensor-reading">
-          <h3>Temperature</h3>
-          <div class="sensor-value" id="temperature">--<span class="value-change" id="temp-change"></span></div>
-          <div class="sensor-unit">°C</div>
-        </div>
-        <div class="sensor-reading">
-          <h3>Humidity</h3>
-          <div class="sensor-value" id="humidity">--<span class="value-change" id="humidity-change"></span></div>
-          <div class="sensor-unit">%</div>
-        </div>
-        <div class="sensor-reading">
-          <h3>CO₂ Level</h3>
-          <div class="sensor-value" id="co2">--<span class="value-change" id="co2-change"></span></div>
-          <div class="sensor-unit">ppm</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="card-title">
-          <span>Light & Water</span>
-          <button class="history-btn" data-chart="light-water">
-            <span class="material-icons">history</span>
-          </button>
-        </h2>
-        <div class="sensor-reading">
-          <h3>Light Intensity</h3>
-          <div class="sensor-value" id="lux">--<span class="value-change" id="lux-change"></span></div>
-          <div class="sensor-unit">lux</div>
-        </div>
-        <div class="sensor-reading">
-          <h3>Water Level</h3>
-          <div class="sensor-value" id="waterLevel">--<span class="value-change" id="water-change"></span></div>
-          <div class="sensor-unit">cm</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="card-title">Device Status</h2>
-        <div class="device-status">
-          <div class="status-indicator" id="humidifier-status"></div>
-          <span>Humidifier: <span id="humidifier-text">--</span></span>
-        </div>
-        <div class="device-status">
-          <div class="status-indicator" id="blower-status"></div>
-          <span>Blower: <span id="blower-text">--</span></span>
-        </div>
-        <div class="device-status">
-          <div class="status-indicator" id="light-status"></div>
-          <span>Light: <span id="light-text">--</span></span>
-        </div>
-        <div class="device-status">
-          <div class="status-indicator" id="exhaust-status"></div>
-          <span>Exhaust: <span id="exhaust-text">--</span></span>
-        </div>
-      </div>
-    </div>
-
+  <section class="grid">
     <div class="card">
-      <h2 class="card-title" id="chart-title">Environmental Trends</h2>
-      <div class="chart-container">
-        <canvas id="environmentChart"></canvas>
-      </div>
+      <h2>Temperature</h2>
+      <p id="temperature">-- °C</p>
     </div>
-  </div>
+    <div class="card">
+      <h2>Humidity</h2>
+      <p id="humidity">-- %</p>
+    </div>
+    <div class="card">
+      <h2>CO₂</h2>
+      <p id="co2">-- ppm</p>
+    </div>
+    <div class="card">
+      <h2>Light</h2>
+      <p id="lux">-- lux</p>
+    </div>
+    <div class="card">
+      <h2>Water Level</h2>
+      <p id="water">-- %</p>
+    </div>
+  </section>
 
-  <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDEozwWzO2_zZP4fEc2Rt71GbCCRXuJDNU",
-  authDomain: "mushroomfarm-15e97.firebaseapp.com",
-  databaseURL: "https://mushroomfarm-15e97-default-rtdb.firebaseio.com",
-  projectId: "mushroomfarm-15e97",
-  storageBucket: "mushroomfarm-15e97.firebasestorage.app",
-  messagingSenderId: "934146779029",
-  appId: "1:934146779029:web:d9c5268f9b3ce41ea7389c",
-  measurementId: "G-5RRYQTP6T2"
-};
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+  <section class="grid">
+    <div class="status-card">
+      <h2>Humidifier</h2>
+      <p id="humidifier">--</p>
+    </div>
+    <div class="status-card">
+      <h2>Blower</h2>
+      <p id="blower">--</p>
+    </div>
+    <div class="status-card">
+      <h2>Light</h2>
+      <p id="light">--</p>
+    </div>
+    <div class="status-card">
+      <h2>Exhaust</h2>
+      <p id="exhaust">--</p>
+    </div>
+  </section>
 
-    // JS code continued for data reading, alert, chart, change indicators etc.
-    // You already have this complete, I’ll keep this file clean and concise.
-  </script>
+  <footer>
+    <p>Powered by ESP32 + Firebase</p>
+  </footer>
 </body>
 </html>
