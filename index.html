@@ -9,72 +9,102 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      margin: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafc;
+      color: #333;
+      margin: 0;
       padding: 20px;
     }
     h1 {
       text-align: center;
+      color: #444;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    .sensor-values {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sensor-values p {
+      font-size: 1.1rem;
+      margin: 5px;
     }
     .status-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
-      max-width: 400px;
-      margin: 20px auto;
+      margin-bottom: 30px;
     }
-    .status-box {
-      padding: 15px;
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      background: #fff;
       border-radius: 10px;
-      color: white;
-      text-align: center;
-      font-size: 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .on { background-color: green; }
-    .off { background-color: red; }
-    .sensor-values {
-      max-width: 400px;
-      margin: auto;
-      text-align: center;
+    .status-label {
+      font-weight: bold;
+      font-size: 1rem;
     }
+    .status-led {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: #ccc;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    .on { background-color: #4CAF50; }
+    .off { background-color: #f44336; }
     button {
-      margin: 20px auto;
       display: block;
-      padding: 10px 20px;
+      margin: 0 auto 30px;
+      padding: 10px 25px;
       font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
     }
     canvas {
-      max-width: 100%;
-      margin-top: 30px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Mushroom Farm Monitor</h1>
 
-  <h1>Mushroom Farm Monitor</h1>
+    <div class="sensor-values" id="sensor-values">
+      <p><strong>Temperature:</strong> <span id="temp">--</span> °C</p>
+      <p><strong>Humidity:</strong> <span id="humidity">--</span> %</p>
+      <p><strong>CO₂:</strong> <span id="co2">--</span> ppm</p>
+      <p><strong>Light:</strong> <span id="lux">--</span> lux</p>
+      <p><strong>Water Level:</strong> <span id="water">--</span> %</p>
+    </div>
 
-  <div class="sensor-values" id="sensor-values">
-    <p><strong>Temperature:</strong> <span id="temp">--</span> °C</p>
-    <p><strong>Humidity:</strong> <span id="humidity">--</span> %</p>
-    <p><strong>CO₂:</strong> <span id="co2">--</span> ppm</p>
-    <p><strong>Light:</strong> <span id="lux">--</span> lux</p>
-    <p><strong>Water Level:</strong> <span id="water">--</span> %</p>
+    <div class="status-grid">
+      <div class="status-item"><span class="status-label">Humidifier</span><div class="status-led" id="humidifier-led"></div></div>
+      <div class="status-item"><span class="status-label">Blower</span><div class="status-led" id="blower-led"></div></div>
+      <div class="status-item"><span class="status-label">Light</span><div class="status-led" id="light-led"></div></div>
+      <div class="status-item"><span class="status-label">Exhaust</span><div class="status-led" id="exhaust-led"></div></div>
+    </div>
+
+    <button onclick="loadData()">Refresh Now</button>
+
+    <canvas id="envChart" height="100"></canvas>
   </div>
-
-  <div class="status-grid">
-    <div class="status-box" id="humidifier">Humidifier</div>
-    <div class="status-box" id="blower">Blower</div>
-    <div class="status-box" id="light">Light</div>
-    <div class="status-box" id="exhaust">Exhaust</div>
-  </div>
-
-  <button onclick="loadData()">Refresh</button>
-
-  <canvas id="tempChart"></canvas>
 
   <script>
-    // 🔧 Your Firebase Config
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       databaseURL: "https://mushroomfarm-3c701-default-rtdb.firebaseio.com",
@@ -84,65 +114,90 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const labels = [];
     const tempData = [];
-    const timeLabels = [];
+    const humidData = [];
+    const co2Data = [];
 
-    const tempChart = new Chart(document.getElementById("tempChart"), {
+    const chart = new Chart(document.getElementById("envChart"), {
       type: "line",
       data: {
-        labels: timeLabels,
-        datasets: [{
-          label: "Temperature (°C)",
-          data: tempData,
-          fill: false,
-          borderColor: "blue",
-          tension: 0.1
-        }]
+        labels: labels,
+        datasets: [
+          {
+            label: "Temperature (°C)",
+            data: tempData,
+            borderColor: "blue",
+            backgroundColor: "transparent",
+            tension: 0.3
+          },
+          {
+            label: "Humidity (%)",
+            data: humidData,
+            borderColor: "green",
+            backgroundColor: "transparent",
+            tension: 0.3
+          },
+          {
+            label: "CO₂ (ppm)",
+            data: co2Data,
+            borderColor: "orange",
+            backgroundColor: "transparent",
+            tension: 0.3
+          }
+        ]
       },
       options: {
+        responsive: true,
         scales: {
-          x: { display: true },
-          y: { beginAtZero: true }
+          y: { beginAtZero: false }
         }
       }
     });
 
-    function setStatus(id, isOn) {
-      const el = document.getElementById(id);
-      el.className = 'status-box ' + (isOn ? 'on' : 'off');
+    function setLED(id, isOn) {
+      const led = document.getElementById(id + "-led");
+      led.className = "status-led " + (isOn ? "on" : "off");
     }
 
     function loadData() {
-      db.ref("sensorReadings/current").once("value", (snapshot) => {
+      db.ref("sensorReadings/current").once("value", snapshot => {
         const data = snapshot.val();
         if (!data) return;
 
-        document.getElementById("temp").textContent = data.sensorData.temperature?.toFixed(1);
-        document.getElementById("humidity").textContent = data.sensorData.humidity?.toFixed(1);
-        document.getElementById("co2").textContent = data.sensorData.co2;
-        document.getElementById("lux").textContent = data.sensorData.lux?.toFixed(1);
-        document.getElementById("water").textContent = data.sensorData.waterLevelPercent?.toFixed(1);
+        const s = data.sensorData;
+        const d = data.deviceStatus;
 
-        setStatus("humidifier", data.deviceStatus.humidifier);
-        setStatus("blower", data.deviceStatus.blower);
-        setStatus("light", data.deviceStatus.light);
-        setStatus("exhaust", data.deviceStatus.exhaust);
+        document.getElementById("temp").textContent = s.temperature?.toFixed(1);
+        document.getElementById("humidity").textContent = s.humidity?.toFixed(1);
+        document.getElementById("co2").textContent = s.co2;
+        document.getElementById("lux").textContent = s.lux?.toFixed(1);
+        document.getElementById("water").textContent = s.waterLevelPercent?.toFixed(1);
 
-        const timestamp = new Date(data.timestamp * 1000);
-        const label = timestamp.toLocaleTimeString();
+        setLED("humidifier", d.humidifier);
+        setLED("blower", d.blower);
+        setLED("light", d.light);
+        setLED("exhaust", d.exhaust);
 
-        if (timeLabels.length >= 10) {
-          timeLabels.shift();
+        // Add chart point
+        const timeLabel = new Date(data.timestamp * 1000).toLocaleTimeString();
+        if (labels.length >= 10) {
+          labels.shift();
           tempData.shift();
+          humidData.shift();
+          co2Data.shift();
         }
-        timeLabels.push(label);
-        tempData.push(data.sensorData.temperature?.toFixed(1));
-        tempChart.update();
+        labels.push(timeLabel);
+        tempData.push(s.temperature);
+        humidData.push(s.humidity);
+        co2Data.push(s.co2);
+        chart.update();
       });
     }
 
-    // Load data once on page load
-    loadData();
+    // Auto-refresh every 10 seconds
+    setInterval(loadData, 10000);
+    loadData(); // Load once on start
   </script>
 </body>
 </html>
