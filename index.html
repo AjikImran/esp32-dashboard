@@ -4,64 +4,145 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mushroom Farm Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      margin: 20px;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    .status-box {
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      font-size: 18px;
+    }
+    .on { background-color: green; }
+    .off { background-color: red; }
+    .sensor-values {
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    button {
+      margin: 20px auto;
+      display: block;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Smart Mushroom Farm Dashboard</h1>
-  </header>
 
-  <section class="grid">
-    <div class="card">
-      <h2>Temperature</h2>
-      <p id="temperature">-- °C</p>
-    </div>
-    <div class="card">
-      <h2>Humidity</h2>
-      <p id="humidity">-- %</p>
-    </div>
-    <div class="card">
-      <h2>CO₂</h2>
-      <p id="co2">-- ppm</p>
-    </div>
-    <div class="card">
-      <h2>Light</h2>
-      <p id="lux">-- lux</p>
-    </div>
-    <div class="card">
-      <h2>Water Level</h2>
-      <p id="water">-- %</p>
-    </div>
-  </section>
+  <h1>Mushroom Farm Monitor</h1>
 
-  <section class="grid">
-    <div class="status-card">
-      <h2>Humidifier</h2>
-      <p id="humidifier">--</p>
-    </div>
-    <div class="status-card">
-      <h2>Blower</h2>
-      <p id="blower">--</p>
-    </div>
-    <div class="status-card">
-      <h2>Light</h2>
-      <p id="light">--</p>
-    </div>
-    <div class="status-card">
-      <h2>Exhaust</h2>
-      <p id="exhaust">--</p>
-    </div>
-  </section>
+  <div class="sensor-values" id="sensor-values">
+    <p><strong>Temperature:</strong> <span id="temp">--</span> °C</p>
+    <p><strong>Humidity:</strong> <span id="humidity">--</span> %</p>
+    <p><strong>CO₂:</strong> <span id="co2">--</span> ppm</p>
+    <p><strong>Light:</strong> <span id="lux">--</span> lux</p>
+    <p><strong>Water Level:</strong> <span id="water">--</span> %</p>
+  </div>
 
-  <footer>
-    <p>Powered by ESP32 + Firebase</p>
-  </footer>
+  <div class="status-grid">
+    <div class="status-box" id="humidifier">Humidifier</div>
+    <div class="status-box" id="blower">Blower</div>
+    <div class="status-box" id="light">Light</div>
+    <div class="status-box" id="exhaust">Exhaust</div>
+  </div>
 
-  <!-- Firebase Realtime Data Logic -->
-  <script src="script.js"></script>
+  <button onclick="loadData()">Refresh</button>
+
+  <canvas id="tempChart"></canvas>
+
+  <script>
+    // 🔧 Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      databaseURL: "https://mushroomfarm-3c701-default-rtdb.firebaseio.com",
+      projectId: "mushroomfarm-3c701",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tempData = [];
+    const timeLabels = [];
+
+    const tempChart = new Chart(document.getElementById("tempChart"), {
+      type: "line",
+      data: {
+        labels: timeLabels,
+        datasets: [{
+          label: "Temperature (°C)",
+          data: tempData,
+          fill: false,
+          borderColor: "blue",
+          tension: 0.1
+        }]
+      },
+      options: {
+        scales: {
+          x: { display: true },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    function setStatus(id, isOn) {
+      const el = document.getElementById(id);
+      el.className = 'status-box ' + (isOn ? 'on' : 'off');
+    }
+
+    function loadData() {
+      db.ref("sensorReadings/current").once("value", (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        document.getElementById("temp").textContent = data.sensorData.temperature?.toFixed(1);
+        document.getElementById("humidity").textContent = data.sensorData.humidity?.toFixed(1);
+        document.getElementById("co2").textContent = data.sensorData.co2;
+        document.getElementById("lux").textContent = data.sensorData.lux?.toFixed(1);
+        document.getElementById("water").textContent = data.sensorData.waterLevelPercent?.toFixed(1);
+
+        setStatus("humidifier", data.deviceStatus.humidifier);
+        setStatus("blower", data.deviceStatus.blower);
+        setStatus("light", data.deviceStatus.light);
+        setStatus("exhaust", data.deviceStatus.exhaust);
+
+        const timestamp = new Date(data.timestamp * 1000);
+        const label = timestamp.toLocaleTimeString();
+
+        if (timeLabels.length >= 10) {
+          timeLabels.shift();
+          tempData.shift();
+        }
+        timeLabels.push(label);
+        tempData.push(data.sensorData.temperature?.toFixed(1));
+        tempChart.update();
+      });
+    }
+
+    // Load data once on page load
+    loadData();
+  </script>
 </body>
 </html>
