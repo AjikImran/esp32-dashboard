@@ -4,85 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mushroom Farm Dashboard</title>
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9fafc;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #444;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-    .sensor-values {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .sensor-values p {
-      font-size: 1.1rem;
-      margin: 5px;
-    }
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    .status-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .status-label {
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .status-led {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background-color: #ccc;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    }
-    .on { background-color: #4CAF50; }
-    .off { background-color: #f44336; }
-    button {
-      display: block;
-      margin: 0 auto 30px;
-      padding: 10px 25px;
-      font-size: 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    canvas {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-    }
-  </style>
+  <!-- External CSS & JS -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Mushroom Farm Monitor</h1>
+
+    <div id="alert-box" class="alert-box">Loading alert...</div>
 
     <div class="sensor-values" id="sensor-values">
       <p><strong>Temperature:</strong> <span id="temp">--</span> °C</p>
@@ -103,101 +38,5 @@
 
     <canvas id="envChart" height="100"></canvas>
   </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      databaseURL: "https://mushroomfarm-3c701-default-rtdb.firebaseio.com",
-      projectId: "mushroomfarm-3c701",
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const labels = [];
-    const tempData = [];
-    const humidData = [];
-    const co2Data = [];
-
-    const chart = new Chart(document.getElementById("envChart"), {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Temperature (°C)",
-            data: tempData,
-            borderColor: "blue",
-            backgroundColor: "transparent",
-            tension: 0.3
-          },
-          {
-            label: "Humidity (%)",
-            data: humidData,
-            borderColor: "green",
-            backgroundColor: "transparent",
-            tension: 0.3
-          },
-          {
-            label: "CO₂ (ppm)",
-            data: co2Data,
-            borderColor: "orange",
-            backgroundColor: "transparent",
-            tension: 0.3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: false }
-        }
-      }
-    });
-
-    function setLED(id, isOn) {
-      const led = document.getElementById(id + "-led");
-      led.className = "status-led " + (isOn ? "on" : "off");
-    }
-
-    function loadData() {
-      db.ref("sensorReadings/current").once("value", snapshot => {
-        const data = snapshot.val();
-        if (!data) return;
-
-        const s = data.sensorData;
-        const d = data.deviceStatus;
-
-        document.getElementById("temp").textContent = s.temperature?.toFixed(1);
-        document.getElementById("humidity").textContent = s.humidity?.toFixed(1);
-        document.getElementById("co2").textContent = s.co2;
-        document.getElementById("lux").textContent = s.lux?.toFixed(1);
-        document.getElementById("water").textContent = s.waterLevelPercent?.toFixed(1);
-
-        setLED("humidifier", d.humidifier);
-        setLED("blower", d.blower);
-        setLED("light", d.light);
-        setLED("exhaust", d.exhaust);
-
-        // Add chart point
-        const timeLabel = new Date(data.timestamp * 1000).toLocaleTimeString();
-        if (labels.length >= 10) {
-          labels.shift();
-          tempData.shift();
-          humidData.shift();
-          co2Data.shift();
-        }
-        labels.push(timeLabel);
-        tempData.push(s.temperature);
-        humidData.push(s.humidity);
-        co2Data.push(s.co2);
-        chart.update();
-      });
-    }
-
-    // Auto-refresh every 10 seconds
-    setInterval(loadData, 10000);
-    loadData(); // Load once on start
-  </script>
 </body>
 </html>
