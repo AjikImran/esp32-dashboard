@@ -17,27 +17,43 @@
   <div class="container">
     <h1>Mushroom Farm Monitor</h1>
 
-    <div id="alert-box" class="alert-box">Loading alert...</div>
+    <div class="main-grid-container">
+      <!-- Alert -->
+      <div class="grid-item full-span">
+        <div id="alert-box" class="alert-box">Loading alert...</div>
+      </div>
 
-    <div class="sensor-values-grid" id="sensor-values">
-  <div class="sensor-item"><strong>Temperature:</strong><br><span id="temp">--</span> °C</div>
-  <div class="sensor-item"><strong>Humidity:</strong><br><span id="humidity">--</span> %</div>
-  <div class="sensor-item"><strong>CO₂:</strong><br><span id="co2">--</span> ppm</div>
-  <div class="sensor-item"><strong>Light:</strong><br><span id="lux">--</span> lux</div>
-  <div class="sensor-item"><strong>Water Level:</strong><br><span id="water">--</span> %</div>
-</div>
+      <!-- Sensor Data -->
+      <div class="grid-item">
+        <div class="sensor-values-grid" id="sensor-values">
+          <div class="sensor-item"><strong>Temperature:</strong><br><span id="temp">--</span> °C</div>
+          <div class="sensor-item"><strong>Humidity:</strong><br><span id="humidity">--</span> %</div>
+          <div class="sensor-item"><strong>CO₂:</strong><br><span id="co2">--</span> ppm</div>
+          <div class="sensor-item"><strong>Light:</strong><br><span id="lux">--</span> lux</div>
+          <div class="sensor-item"><strong>Water Level:</strong><br><span id="water">--</span> %</div>
+        </div>
+      </div>
 
+      <!-- Status LEDs -->
+      <div class="grid-item">
+        <div class="status-grid">
+          <div class="status-item"><span class="status-label">Humidifier</span><div class="status-led" id="humidifier-led"></div></div>
+          <div class="status-item"><span class="status-label">Blower</span><div class="status-led" id="blower-led"></div></div>
+          <div class="status-item"><span class="status-label">Light</span><div class="status-led" id="light-led"></div></div>
+          <div class="status-item"><span class="status-label">Exhaust</span><div class="status-led" id="exhaust-led"></div></div>
+        </div>
+      </div>
 
-    <div class="status-grid">
-      <div class="status-item"><span class="status-label">Humidifier</span><div class="status-led" id="humidifier-led"></div></div>
-      <div class="status-item"><span class="status-label">Blower</span><div class="status-led" id="blower-led"></div></div>
-      <div class="status-item"><span class="status-label">Light</span><div class="status-led" id="light-led"></div></div>
-      <div class="status-item"><span class="status-label">Exhaust</span><div class="status-led" id="exhaust-led"></div></div>
+      <!-- Refresh Button -->
+      <div class="grid-item">
+        <button onclick="loadData()">Refresh Now</button>
+      </div>
+
+      <!-- Chart -->
+      <div class="grid-item full-span">
+        <canvas id="envChart" height="100"></canvas>
+      </div>
     </div>
-
-    <button onclick="loadData()">Refresh Now</button>
-
-    <canvas id="envChart" height="100"></canvas>
   </div>
 </body>
 </html>
