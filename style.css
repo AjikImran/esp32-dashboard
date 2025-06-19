@@ -35,15 +35,22 @@ h1 {
   background-color: #4caf50;
 }
 
-.sensor-values {
-  text-align: center;
+.sensor-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
   margin-bottom: 30px;
+  text-align: center;
 }
 
-.sensor-values p {
+.sensor-item {
+  padding: 15px 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   font-size: 1.1rem;
-  margin: 5px;
 }
+
 
 .status-grid {
   display: grid;
