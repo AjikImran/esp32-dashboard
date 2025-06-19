@@ -16,6 +16,7 @@ h1 {
   margin: auto;
 }
 
+/* ALERT BOX */
 .alert-box {
   max-width: 600px;
   margin: 20px auto;
@@ -35,6 +36,7 @@ h1 {
   background-color: #4caf50;
 }
 
+/* SENSOR VALUES GRID */
 .sensor-values-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -51,7 +53,7 @@ h1 {
   font-size: 1.1rem;
 }
 
-
+/* STATUS SECTION */
 .status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -90,6 +92,7 @@ h1 {
   background-color: #f44336;
 }
 
+/* BUTTON */
 button {
   display: block;
   margin: 0 auto 30px;
@@ -106,6 +109,7 @@ button:hover {
   background: #0056b3;
 }
 
+/* CHART CANVAS */
 canvas {
   background: white;
   border-radius: 10px;
