@@ -1,3 +1,8 @@
+/* Global Reset */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f9fafc;
@@ -97,6 +102,7 @@ h1 {
   border-radius: 50%;
   background-color: #ccc;
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
 }
 
 .on {
@@ -131,7 +137,7 @@ canvas {
   padding: 20px;
 }
 
-/* Responsive */
+/* Responsive: collapse grid on small screens */
 @media (max-width: 768px) {
   .main-grid-container {
     grid-template-columns: 1fr;
@@ -139,5 +145,19 @@ canvas {
 
   .full-span {
     grid-column: span 1;
+  }
+
+  .sensor-values-grid,
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sensor-item,
+  .status-item {
+    font-size: 1rem;
+  }
+
+  button {
+    font-size: 15px;
   }
 }
