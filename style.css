@@ -1,13 +1,7 @@
+/* Global Reset */
 * {
   box-sizing: border-box;
 }
-
-#tempHumChart,
-#co2Chart,
-#luxChart {
-  height: 300px !important;
-}
-
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,6 +21,7 @@ h1 {
   margin: auto;
 }
 
+/* Main Grid Layout */
 .main-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -45,6 +40,7 @@ h1 {
   grid-column: span 3;
 }
 
+/* Alert Box */
 .alert-box {
   padding: 15px 20px;
   border-radius: 8px;
@@ -62,6 +58,7 @@ h1 {
   background-color: #4caf50;
 }
 
+/* Sensor Grid */
 .sensor-values-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -77,6 +74,7 @@ h1 {
   font-size: 1.1rem;
 }
 
+/* Status LED Grid */
 .status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -115,6 +113,7 @@ h1 {
   background-color: #f44336;
 }
 
+/* Button */
 button {
   display: block;
   width: 100%;
@@ -125,18 +124,24 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 button:hover {
   background: #0056b3;
 }
 
+/* Chart Canvas Styling */
 canvas {
-  background: white;
+  display: block;
+  width: 100% !important;
+  height: 300px !important;
+  background: #fff;
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px;
 }
 
+/* Responsive: collapse grid on small screens */
 @media (max-width: 768px) {
   .main-grid-container {
     grid-template-columns: 1fr;
@@ -149,5 +154,14 @@ canvas {
   .sensor-values-grid,
   .status-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sensor-item,
+  .status-item {
+    font-size: 1rem;
+  }
+
+  button {
+    font-size: 15px;
   }
 }
