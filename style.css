@@ -1,4 +1,3 @@
-/* Global Reset */
 * {
   box-sizing: border-box;
 }
@@ -21,7 +20,7 @@ h1 {
   margin: auto;
 }
 
-/* Main Grid Layout */
+/* Layout */
 .main-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -40,7 +39,7 @@ h1 {
   grid-column: span 3;
 }
 
-/* Alert Box */
+/* Alerts */
 .alert-box {
   padding: 15px 20px;
   border-radius: 8px;
@@ -58,7 +57,7 @@ h1 {
   background-color: #4caf50;
 }
 
-/* Sensor Grid */
+/* Sensors */
 .sensor-values-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -74,7 +73,7 @@ h1 {
   font-size: 1.1rem;
 }
 
-/* Status LED Grid */
+/* Status LEDs */
 .status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -131,7 +130,7 @@ button:hover {
   background: #0056b3;
 }
 
-/* Chart Canvas Styling */
+/* Charts */
 canvas {
   display: block;
   width: 100% !important;
@@ -143,7 +142,7 @@ canvas {
 }
 
 .chartjs-render-monitor {
-  color: #222 !important;
+  color: #000 !important;
   font-size: 14px !important;
   font-weight: 600 !important;
 }
