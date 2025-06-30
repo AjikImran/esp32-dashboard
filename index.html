@@ -9,7 +9,7 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- Styles -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <!-- Status LEDs -->
+      <!-- Device Status LEDs -->
       <div class="grid-item">
         <div class="status-grid">
           <div class="status-item"><span class="status-label">Humidifier</span><div class="status-led" id="humidifier-led"></div></div>
@@ -51,16 +51,16 @@
       <!-- Charts -->
       <div class="grid-item full-span">
         <h3>Temperature & Humidity</h3>
-        <canvas id="tempHumChart" height="300"></canvas>
+        <canvas id="tempHumChart"></canvas>
         <h3>CO₂ Levels</h3>
-        <canvas id="co2Chart" height="300"></canvas>
+        <canvas id="co2Chart"></canvas>
         <h3>Light Intensity</h3>
-        <canvas id="luxChart" height="300"></canvas>
+        <canvas id="luxChart"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- ✅ Load script AFTER page has loaded -->
+  <!-- Load JS after HTML -->
   <script src="script.js"></script>
 </body>
 </html>
