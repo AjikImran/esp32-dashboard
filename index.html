@@ -9,9 +9,8 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- Style & Script -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
-  <script  src="script.js"></script>
 </head>
 <body>
   <div class="container">
@@ -52,13 +51,16 @@
       <!-- Charts -->
       <div class="grid-item full-span">
         <h3>Temperature & Humidity</h3>
-        <canvas id="tempHumChart" height="120"></canvas>
+        <canvas id="tempHumChart" height="300"></canvas>
         <h3>CO₂ Levels</h3>
-        <canvas id="co2Chart" height="100"></canvas>
+        <canvas id="co2Chart" height="300"></canvas>
         <h3>Light Intensity</h3>
-        <canvas id="luxChart" height="100"></canvas>
+        <canvas id="luxChart" height="300"></canvas>
       </div>
     </div>
   </div>
+
+  <!-- ✅ Load script AFTER page has loaded -->
+  <script src="script.js"></script>
 </body>
 </html>
