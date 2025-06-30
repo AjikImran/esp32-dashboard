@@ -15,100 +15,103 @@ window.onload = function () {
   const labels = [];
   const tempData = [], humidData = [], co2Data = [], luxData = [];
 
- const commonOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: {
-        font: {
-          size: 14,
-          weight: 'bold'
-        },
-        color: '#222'
-      }
-    }
-  },
-  scales: {
-    x: {
-      ticks: {
-        color: '#222',
-        font: {
-          size: 13,
-          weight: 'bold'
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: { size: 16, weight: 'bold' },
+          color: '#000'
         }
       }
     },
-    y: {
-      ticks: {
-        color: '#222',
-        font: {
-          size: 13,
-          weight: 'bold'
+    scales: {
+      x: {
+        ticks: {
+          color: '#000',
+          font: { size: 14, weight: 'bold' }
+        },
+        title: {
+          display: true,
+          text: 'Time',
+          color: '#000',
+          font: { size: 14, weight: 'bold' }
+        }
+      },
+      y: {
+        ticks: {
+          color: '#000',
+          font: { size: 14, weight: 'bold' }
+        },
+        title: {
+          display: true,
+          text: 'Value',
+          color: '#000',
+          font: { size: 14, weight: 'bold' }
         }
       }
     }
-  }
-};
+  };
 
-const tempHumChart = new Chart(document.getElementById("tempHumChart"), {
-  type: "line",
-  data: {
-    labels: labels,
-    datasets: [
-      {
-        label: "Temperature (°C)",
-        data: tempData,
-        borderColor: "blue",
-        backgroundColor: "rgba(0, 123, 255, 0.1)",
+  const tempHumChart = new Chart(document.getElementById("tempHumChart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Temperature (°C)",
+          data: tempData,
+          borderColor: "blue",
+          backgroundColor: "rgba(0, 123, 255, 0.1)",
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: "Humidity (%)",
+          data: humidData,
+          borderColor: "green",
+          backgroundColor: "rgba(40, 167, 69, 0.1)",
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: commonOptions
+  });
+
+  const co2Chart = new Chart(document.getElementById("co2Chart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "CO₂ (ppm)",
+        data: co2Data,
+        borderColor: "orange",
+        backgroundColor: "rgba(255, 165, 0, 0.1)",
         fill: true,
         tension: 0.3
-      },
-      {
-        label: "Humidity (%)",
-        data: humidData,
-        borderColor: "green",
-        backgroundColor: "rgba(40, 167, 69, 0.1)",
+      }]
+    },
+    options: commonOptions
+  });
+
+  const luxChart = new Chart(document.getElementById("luxChart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Light (lux)",
+        data: luxData,
+        borderColor: "purple",
+        backgroundColor: "rgba(153, 102, 255, 0.1)",
         fill: true,
         tension: 0.3
-      }
-    ]
-  },
-  options: commonOptions
-});
-
-const co2Chart = new Chart(document.getElementById("co2Chart"), {
-  type: "line",
-  data: {
-    labels: labels,
-    datasets: [{
-      label: "CO₂ (ppm)",
-      data: co2Data,
-      borderColor: "orange",
-      backgroundColor: "rgba(255, 165, 0, 0.1)",
-      fill: true,
-      tension: 0.3
-    }]
-  },
-  options: commonOptions
-});
-
-const luxChart = new Chart(document.getElementById("luxChart"), {
-  type: "line",
-  data: {
-    labels: labels,
-    datasets: [{
-      label: "Light (lux)",
-      data: luxData,
-      borderColor: "purple",
-      backgroundColor: "rgba(153, 102, 255, 0.1)",
-      fill: true,
-      tension: 0.3
-    }]
-  },
-  options: commonOptions
-});
-
+      }]
+    },
+    options: commonOptions
+  });
 
   function setLED(id, isOn) {
     const led = document.getElementById(id + "-led");
@@ -140,10 +143,10 @@ const luxChart = new Chart(document.getElementById("luxChart"), {
       }
 
       labels.push(timeLabel);
-      if (typeof s.temperature === 'number') tempData.push(s.temperature);
-      if (typeof s.humidity === 'number') humidData.push(s.humidity);
-      if (typeof s.co2 === 'number') co2Data.push(s.co2);
-      if (typeof s.lux === 'number') luxData.push(s.lux);
+      tempData.push(s.temperature);
+      humidData.push(s.humidity);
+      co2Data.push(s.co2);
+      luxData.push(s.lux);
 
       tempHumChart.update();
       co2Chart.update();
@@ -158,7 +161,6 @@ const luxChart = new Chart(document.getElementById("luxChart"), {
     });
   };
 
-  // Initial and periodic refresh
   loadData();
   setInterval(loadData, 10000);
 };
