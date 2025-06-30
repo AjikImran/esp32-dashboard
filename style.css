@@ -139,9 +139,16 @@ canvas {
   background: #fff;
   border-radius: 10px;
   padding: 10px;
+  font-family: 'Segoe UI', sans-serif !important;
 }
 
-/* Responsive: collapse grid on small screens */
+.chartjs-render-monitor {
+  color: #222 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .main-grid-container {
     grid-template-columns: 1fr;
