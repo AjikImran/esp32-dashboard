@@ -1,4 +1,4 @@
-// Firebase config (replace with yours)
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDEozwWzO2_zZP4fEc2Rt71GbCCRXuJDNU",
   authDomain: "mushroomfarm-15e97.firebaseapp.com",
@@ -6,8 +6,7 @@ const firebaseConfig = {
   projectId: "mushroomfarm-15e97",
   storageBucket: "mushroomfarm-15e97.appspot.com",
   messagingSenderId: "934146779029",
-  appId: "1:934146779029:web:d9c5268f9b3ce41ea7389c",
-  measurementId: "G-5RRYQTP6T2"
+  appId: "1:934146779029:web:d9c5268f9b3ce41ea7389c"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -82,10 +81,10 @@ function setLED(id, isOn) {
 function loadData() {
   db.ref("sensorReadings/current").once("value").then(snapshot => {
     const data = snapshot.val();
-    if (!data) return;
+    if (!data || !data.sensorData) return;
 
     const s = data.sensorData;
-    const d = data.deviceStatus;
+    const d = data.deviceStatus || {};
     const timeLabel = new Date(data.timestamp * 1000).toLocaleTimeString();
 
     document.getElementById("temp").textContent = s.temperature?.toFixed(1) ?? "--";
@@ -104,10 +103,10 @@ function loadData() {
     }
 
     labels.push(timeLabel);
-    tempData.push(s.temperature);
-    humidData.push(s.humidity);
-    co2Data.push(s.co2);
-    luxData.push(s.lux);
+    if (typeof s.temperature === 'number') tempData.push(s.temperature);
+    if (typeof s.humidity === 'number') humidData.push(s.humidity);
+    if (typeof s.co2 === 'number') co2Data.push(s.co2);
+    if (typeof s.lux === 'number') luxData.push(s.lux);
 
     tempHumChart.update();
     co2Chart.update();
@@ -122,6 +121,6 @@ function loadData() {
   });
 }
 
-// Initial + repeated updates
+// Initial & periodic load
 loadData();
 setInterval(loadData, 10000);
