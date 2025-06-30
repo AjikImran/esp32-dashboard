@@ -2,6 +2,13 @@
   box-sizing: border-box;
 }
 
+#tempHumChart,
+#co2Chart,
+#luxChart {
+  height: 300px !important;
+}
+
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f9fafc;
