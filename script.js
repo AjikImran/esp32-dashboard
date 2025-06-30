@@ -1,10 +1,10 @@
-// Replace with your actual Firebase API key
+// Firebase config (replace with yours)
 const firebaseConfig = {
   apiKey: "AIzaSyDEozwWzO2_zZP4fEc2Rt71GbCCRXuJDNU",
   authDomain: "mushroomfarm-15e97.firebaseapp.com",
   databaseURL: "https://mushroomfarm-15e97-default-rtdb.firebaseio.com",
   projectId: "mushroomfarm-15e97",
-  storageBucket: "mushroomfarm-15e97.firebasestorage.app",
+  storageBucket: "mushroomfarm-15e97.appspot.com",
   messagingSenderId: "934146779029",
   appId: "1:934146779029:web:d9c5268f9b3ce41ea7389c",
   measurementId: "G-5RRYQTP6T2"
@@ -12,12 +12,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Chart Data
 const labels = [];
-const tempData = [];
-const humidData = [];
-const co2Data = [];
+const tempData = [], humidData = [], co2Data = [], luxData = [];
 
-const chart = new Chart(document.getElementById("envChart"), {
+const tempHumChart = new Chart(document.getElementById("tempHumChart"), {
   type: "line",
   data: {
     labels: labels,
@@ -26,31 +25,53 @@ const chart = new Chart(document.getElementById("envChart"), {
         label: "Temperature (°C)",
         data: tempData,
         borderColor: "blue",
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(0, 123, 255, 0.1)",
+        fill: true,
         tension: 0.3
       },
       {
         label: "Humidity (%)",
         data: humidData,
         borderColor: "green",
-        backgroundColor: "transparent",
-        tension: 0.3
-      },
-      {
-        label: "CO₂ (ppm)",
-        data: co2Data,
-        borderColor: "orange",
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(40, 167, 69, 0.1)",
+        fill: true,
         tension: 0.3
       }
     ]
   },
-  options: {
-    responsive: true,
-    scales: {
-      y: { beginAtZero: false }
-    }
-  }
+  options: { responsive: true, maintainAspectRatio: false }
+});
+
+const co2Chart = new Chart(document.getElementById("co2Chart"), {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "CO₂ (ppm)",
+      data: co2Data,
+      borderColor: "orange",
+      backgroundColor: "rgba(255, 165, 0, 0.1)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
+});
+
+const luxChart = new Chart(document.getElementById("luxChart"), {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "Light (lux)",
+      data: luxData,
+      borderColor: "purple",
+      backgroundColor: "rgba(153, 102, 255, 0.1)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
 });
 
 function setLED(id, isOn) {
@@ -65,6 +86,7 @@ function loadData() {
 
     const s = data.sensorData;
     const d = data.deviceStatus;
+    const timeLabel = new Date(data.timestamp * 1000).toLocaleTimeString();
 
     document.getElementById("temp").textContent = s.temperature?.toFixed(1) ?? "--";
     document.getElementById("humidity").textContent = s.humidity?.toFixed(1) ?? "--";
@@ -77,30 +99,29 @@ function loadData() {
     setLED("light", d.light);
     setLED("exhaust", d.exhaust);
 
-    const timeLabel = new Date(data.timestamp * 1000).toLocaleTimeString();
     if (labels.length >= 10) {
-      labels.shift(); tempData.shift(); humidData.shift(); co2Data.shift();
+      labels.shift(); tempData.shift(); humidData.shift(); co2Data.shift(); luxData.shift();
     }
+
     labels.push(timeLabel);
     tempData.push(s.temperature);
     humidData.push(s.humidity);
     co2Data.push(s.co2);
-    chart.update();
+    luxData.push(s.lux);
+
+    tempHumChart.update();
+    co2Chart.update();
+    luxChart.update();
   });
 
   db.ref("alerts/waterLevel").once("value").then(snapshot => {
     const msg = snapshot.val() || "No alert";
-    const alertBox = document.getElementById("alert-box");
-    alertBox.textContent = msg;
-    alertBox.classList.remove("alert-ok", "alert-warning");
-
-    if (msg.toLowerCase().includes("low")) {
-      alertBox.classList.add("alert-warning");
-    } else {
-      alertBox.classList.add("alert-ok");
-    }
+    const box = document.getElementById("alert-box");
+    box.textContent = msg;
+    box.className = "alert-box " + (msg.toLowerCase().includes("low") ? "alert-warning" : "alert-ok");
   });
 }
 
+// Initial + repeated updates
 loadData();
 setInterval(loadData, 10000);
