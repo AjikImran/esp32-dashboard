@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mushroom Farm Dashboard</title>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
@@ -50,12 +53,20 @@
 
       <!-- Charts -->
       <div class="grid-item full-span">
-        <h3>Temperature & Humidity</h3>
-        <canvas id="tempHumChart"></canvas>
-        <h3>CO₂ Levels</h3>
-        <canvas id="co2Chart"></canvas>
-        <h3>Light Intensity</h3>
-        <canvas id="luxChart"></canvas>
+        <!-- Chart 1 Wrapper -->
+        <div class="chart-container">
+          <canvas id="tempHumChart"></canvas>
+        </div>
+        
+        <!-- Chart 2 Wrapper -->
+        <div class="chart-container">
+          <canvas id="co2Chart"></canvas>
+        </div>
+
+        <!-- Chart 3 Wrapper -->
+        <div class="chart-container">
+          <canvas id="luxChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
