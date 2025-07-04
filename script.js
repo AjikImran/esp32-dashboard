@@ -17,38 +17,50 @@ window.onload = function () {
 
   const commonOptions = {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: false, // Important: allows the container to control the size
     plugins: {
       legend: {
         position: 'top',
         labels: {
-          font: { size: 16, weight: 'bold' },
-          color: '#000'
+          font: { size: 14, weight: 'bold' },
+          color: '#333'
+        }
+      },
+      title: {
+        display: true,
+        font: {
+            size: 18,
+            weight: 'bold'
+        },
+        color: '#111',
+        padding: {
+            top: 10,
+            bottom: 20 // Added more padding to separate from legend
         }
       }
     },
     scales: {
       x: {
         ticks: {
-          color: '#000',
-          font: { size: 14, weight: 'bold' }
+          color: '#333',
+          font: { size: 12 }
         },
         title: {
           display: true,
           text: 'Time',
-          color: '#000',
+          color: '#333',
           font: { size: 14, weight: 'bold' }
         }
       },
       y: {
         ticks: {
-          color: '#000',
-          font: { size: 14, weight: 'bold' }
+          color: '#333',
+          font: { size: 12 }
         },
         title: {
           display: true,
           text: 'Value',
-          color: '#000',
+          color: '#333',
           font: { size: 14, weight: 'bold' }
         }
       }
@@ -78,7 +90,14 @@ window.onload = function () {
         }
       ]
     },
-    options: commonOptions
+    options: {
+        ...commonOptions,
+        plugins: { ...commonOptions.plugins,
+            title: { ...commonOptions.plugins.title,
+                text: 'Temperature & Humidity' // Specific title
+            }
+        }
+    }
   });
 
   const co2Chart = new Chart(document.getElementById("co2Chart"), {
@@ -94,7 +113,14 @@ window.onload = function () {
         tension: 0.3
       }]
     },
-    options: commonOptions
+    options: {
+        ...commonOptions,
+        plugins: { ...commonOptions.plugins,
+            title: { ...commonOptions.plugins.title,
+                text: 'CO₂ Levels' // Specific title
+            }
+        }
+    }
   });
 
   const luxChart = new Chart(document.getElementById("luxChart"), {
@@ -110,7 +136,14 @@ window.onload = function () {
         tension: 0.3
       }]
     },
-    options: commonOptions
+    options: {
+        ...commonOptions,
+        plugins: { ...commonOptions.plugins,
+            title: { ...commonOptions.plugins.title,
+                text: 'Light Intensity' // Specific title
+            }
+        }
+    }
   });
 
   function setLED(id, isOn) {
