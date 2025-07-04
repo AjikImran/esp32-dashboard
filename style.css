@@ -46,7 +46,6 @@ h1 {
   font-weight: bold;
   text-align: center;
   color: #fff;
-  background-color: #2196f3;
 }
 
 .alert-warning {
@@ -130,22 +129,22 @@ button:hover {
   background: #0056b3;
 }
 
-/* Charts */
-canvas {
-  display: block;
-  width: 100% !important;
-  height: 300px !important;
+/* --- CORRECTED CHART STYLES --- */
+
+/* This new rule styles the container, not the canvas itself. */
+.chart-container {
+  position: relative;     /* This is essential for Chart.js responsiveness */
+  height: 400px;          /* Give each chart a fixed height */
+  width: 100%;            /* Make it fill its parent's width */
   background: #fff;
   border-radius: 10px;
   padding: 10px;
-  font-family: 'Segoe UI', sans-serif !important;
+  margin-top: 20px;       /* Add some space between charts */
 }
 
-.chartjs-render-monitor {
-  color: #000 !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-}
+/* The problematic rules for canvas and .chartjs-render-monitor have been REMOVED. */
+/* Do NOT add back the old canvas styling. */
+
 
 /* Responsive */
 @media (max-width: 768px) {
